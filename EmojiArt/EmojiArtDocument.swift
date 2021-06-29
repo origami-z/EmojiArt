@@ -6,9 +6,13 @@
 //
 
 import SwiftUI
+import os
 
-class EmojiArtDocument: ObservableObject
-{
+// ObservableObject / Modal should be enforced in the main thread
+// @MainActor
+class EmojiArtDocument: ObservableObject {
+    let logger = Logger(subsystem: "com.zhihaocui.ios.experiment.EmojiArt.EmojiArtDocument", category: "Model")
+    
     @Published private(set) var emojiArt: EmojiArtModel {
         didSet {
             if emojiArt.background != oldValue.background {
@@ -40,9 +44,12 @@ class EmojiArtDocument: ObservableObject
         case .url(let url):
             // fetch the url
             backgroundImageFetchStatus = .fetching
-            DispatchQueue.global(qos: .userInitiated).async {
+            //  DispatchQueue.global(qos: .userInitiated).async {
+            // async { // Unstructured task
+            asyncDetached(priority: .userInitiated) { // Detached task
                 let imageData = try? Data(contentsOf: url)
-                DispatchQueue.main.async { [weak self] in
+                await MainActor.run { [weak self] in
+                    // Extract to function and mark as @MainActor 
                     // Makes sure previous slow loading url is not overwritten a newer faster one
                     if self?.emojiArt.background == EmojiArtModel.Background.url(url) {
                         self?.backgroundImageFetchStatus = .idle
