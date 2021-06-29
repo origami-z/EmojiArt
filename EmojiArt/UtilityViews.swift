@@ -63,3 +63,25 @@ struct IdentifiableAlert: Identifiable {
     var id: String
     var alert: () -> Alert
 }
+
+// A modifier that animates a font through various sizes.
+
+struct AnimatableSystemFontModifier: AnimatableModifier {
+    var size: CGFloat
+    
+    var animatableData: CGFloat {
+        get { size }
+        set { size = newValue }
+    }
+    
+    func body(content: Content) -> some View {
+        content.font(.system(size: size))
+    }
+}
+
+
+extension View {
+    func animatableFont(size: CGFloat) -> some View {
+        self.modifier(AnimatableSystemFontModifier(size: size))
+    }
+}

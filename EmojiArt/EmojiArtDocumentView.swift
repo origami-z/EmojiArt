@@ -34,8 +34,7 @@ struct EmojiArtDocumentView: View {
                 } else {
                     ForEach(document.emojis) { emoji in
                         Text(emoji.text)
-                            .font(.system(size: fontSize(for: emoji)))
-                            .scaleEffect(zoomScale)
+                            .animatableFont(size: zoomedFontSize(for: emoji))
                             .position(position(for: emoji, in: geometry))
                     }
                 }
@@ -94,8 +93,8 @@ struct EmojiArtDocumentView: View {
         )
     }
     
-    private func fontSize(for emoji: EmojiArtModel.Emoji) -> CGFloat {
-        CGFloat(emoji.size)
+    private func zoomedFontSize(for emoji: EmojiArtModel.Emoji) -> CGFloat {
+        CGFloat(emoji.size) * zoomScale
     }
     
     @State private var steadyStatePanOffset: CGSize = CGSize.zero
